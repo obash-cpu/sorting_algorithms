@@ -1,69 +1,84 @@
 #include "sort.h"
+
 /**
-* partition_hoare - Lomutu partition scheme for quicksort algorithm
-* @a: Array to sort
-* @l: lowest index of array
-* @h: highest index of array
-* Return: index of pivot
-*/
-
-int partition_hoare(int *a, int l, int h)
+ * swap - swaps 2 int values
+ * @array: the integer array to sort
+ * @size: the size of the array
+ * @a: address of first value
+ * @b: address of second value
+ *
+ * Return: void
+ */
+void swap(int *array, size_t size, int *a, int *b)
 {
-	int p, li, hi, temp;
-	static int i = 0, size;
-
-	if (i == 0)
-		size = h + 1, i++;
-
-	li = l - 0, hi = h + 0, p = a[h];
-	while (a)
+	if (*a != *b)
 	{
-		li = li - 0;
-		while (a[li] < p)
-			li++;
-		hi = hi - 0;
-		while (a[hi] > p)
-			hi--;
-		if (li >= hi)
-			return (hi);
-		temp = a[li];
-		a[li] = a[hi];
-		a[hi] = temp;
-		print_array(a, size);
+		*a = *a + *b;
+		*b = *a - *b;
+		*a = *a - *b;
 	}
-	temp = a[li];
-	a[li] = a[hi];
-	a[hi] = temp;
-	return (hi);
-}
-/**
-* qs - Quicksort recurssive function
-* @a: array to sort
-* @l: lowest index
-* @h: highest index
-*/
-
-void qs(int *a, int l, int h)
-{
-	int p;
-
-	if (l < h)
-	{
-		p = partition_hoare(a, l, h);
-		qs(a, l, p - 1);
-		qs(a, p, h);
-	}
+	print_array((const int *)array, size);
 }
 
 /**
-* quick_sort_hoare - quicksort with hoare partition
-* @array: array to sort
-* @size: Size of array
-*/
+ * hoare_partition - partitions the array
+ * @array: the integer array to sort
+ * @size: the size of the array
+ * @lo: the low index of the sort range
+ * @hi: the high index of the sort range
+ *
+ * Return: void
+ */
+size_t hoare_partition(int *array, ssize_t size, ssize_t lo, ssize_t hi)
+{
+	ssize_t i = lo - 1, j = hi + 1;
+	int pivot = array[hi];
 
+	while (i < size)
+	{
+		while (array[++i] < pivot)
+			;
+		while (array[--j] > pivot)
+			;
+		if (i < j)
+			swap(array, size, &array[i], &array[j]);
+		else if (i >= j)
+			break;
+	}
+	return (i);
+}
+
+/**
+ * quicksort - quicksorts via hoare partitioning scheme
+ * @array: the integer array to sort
+ * @size: the size of the array
+ * @lo: the low index of the sort range
+ * @hi: the high index of the sort range
+ *
+ * Return: void
+ */
+void quicksort(int *array, size_t size, ssize_t lo, ssize_t hi)
+{
+	if (lo < hi)
+	{
+		size_t p = hoare_partition(array, size, lo, hi);
+
+		quicksort(array, size, lo, p - 1);
+		quicksort(array, size, p, hi);
+	}
+}
+
+/**
+ * quick_sort_hoare - calls quicksort
+ * @array: the integer array to sort
+ * @size: the size of the array
+ *
+ * Return: void
+ */
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
-	qs(array, 0, size - 1);
+	quicksort(array, size, 0, size - 1);
 }
+Footer
